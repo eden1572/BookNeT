@@ -1,0 +1,18 @@
+00:00:00.930346 VirtualBox GUI VM Selector Window 6.1.34 r150636 win.amd64 (Mar 23 2022 00:36:21) release log
+00:00:00.930348 Log opened 2023-08-30T22:32:45.076738700Z
+00:00:00.930349 Build Type: release
+00:00:00.930353 OS Product: Windows 11
+00:00:00.930354 OS Release: 10.0.22621
+00:00:00.930355 OS Service Pack: 
+00:00:00.947255 DMI Product Name: HP Laptop 15-dw2xxx
+00:00:00.956394 DMI Product Version: Type1ProductConfigId
+00:00:00.956416 Firmware type: UEFI
+00:00:00.956711 Secure Boot: VERR_PRIVILEGE_NOT_HELD
+00:00:00.956729 Host RAM: 16165MB (15.7GB) total, 7940MB (7.7GB) available
+00:00:00.956733 Executable: C:\Program Files\Oracle\VirtualBox\VirtualBox.exe
+00:00:00.956734 Process ID: 19588
+00:00:00.956735 Package type: WINDOWS_64BITS_GENERIC
+00:00:00.957401 Qt version: 5.6.2
+00:00:01.020417 GUI: UIMediumEnumerator: Medium-enumeration started...
+00:00:02.212834 GUI: UIMediumEnumerator: Medium-enumeration finished!
+00:00:02.304199 refreshCertificates/#3: Found 1/72 SSL certs we/you trust (previously 1/59).
