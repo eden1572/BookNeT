@@ -11,35 +11,28 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # שלב 1: שלב בדיקה והורדת הקוד
       - uses: actions/checkout@v4
 
-      # שלב 2: התקנה של MSBuild
       - name: Setup MSBuild path
         uses: microsoft/setup-msbuild@v1.0.2
 
-      # שלב 3: התקנה של NuGet
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v1.0.5
 
-      # שלב 4: שחזור החבילות
       - name: Restore NuGet packages
-        run: nuget restore
+        run: dotnet restore ./_BookNeT_.csproj  # שינוי בפקודת restore ל-dotnet
 
-      # שלב 5: בניית הקוד
       - name: Build the project
-        run: msbuild /nologo /verbosity:m /t:Build
+        run: msbuild ./_BookNeT_.csproj /nologo /verbosity:m /t:Build
 
-      # שלב 6: פרסום לקובץ
       - name: Publish to folder
-        run: msbuild /nologo /verbosity:m /t:Build /p:DeployOnBuild=true /p:PublishProfile=FolderProfile /p:PublishDir='$(Build.ArtifactStagingDirectory)'
+        run: msbuild ./_BookNeT_.csproj /nologo /verbosity:m /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
 
-      # שלב 7: העלאת הארטיפקטים
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: ASP-app
-          path: $(Build.ArtifactStagingDirectory)
+          path: '/published/**'
 
   deploy:
     runs-on: windows-latest
@@ -49,18 +42,16 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      # שלב 8: הורדת הארטיפקטים
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
           name: ASP-app
 
-      # שלב 9: פריסה ל-Azure
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'BookNeT'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_698BC021C69048628DF1BC8B9E7049E4 }}
           package: .
