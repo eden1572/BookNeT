@@ -11,39 +11,35 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # שלב 1: Checkout את הקוד שלך
+      # שלב 1: שלב בדיקה והורדת הקוד
       - uses: actions/checkout@v4
 
-      # שלב 2: Setup MSBuild path
+      # שלב 2: התקנה של MSBuild
       - name: Setup MSBuild path
         uses: microsoft/setup-msbuild@v1.0.2
 
-      # שלב 3: Setup NuGet
+      # שלב 3: התקנה של NuGet
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v1.0.5
 
-      # שלב 4: Restore NuGet packages (נכון אם יש לך קובץ packages.config, אחרת נוכל להחליף ב-docker restore)
+      # שלב 4: שחזור החבילות
       - name: Restore NuGet packages
         run: nuget restore
 
-      # שלב 5: אם מדובר בפרויקט .NET, יש להוסיף את dotnet restore כדי לשחזר תלויות
-      - name: Restore dependencies
-        run: dotnet restore ./BookNeT.sln  # אם יש לך קובץ Solution בשם BookNeT.sln
-
-      # שלב 6: Build את הפרויקט
+      # שלב 5: בניית הקוד
       - name: Build the project
-        run: dotnet build ./BookNeT.sln --configuration Release
+        run: msbuild /nologo /verbosity:m /t:Build
 
-      # שלב 7: Publish את הפרויקט לקובץ פיזי
+      # שלב 6: פרסום לקובץ
       - name: Publish to folder
-        run: msbuild /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\" 
+        run: msbuild /nologo /verbosity:m /t:Build /p:DeployOnBuild=true /p:PublishProfile=FolderProfile /p:PublishDir='$(Build.ArtifactStagingDirectory)'
 
-      # שלב 8: Upload artifact
+      # שלב 7: העלאת הארטיפקטים
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: ASP-app
-          path: '/published/**'
+          path: $(Build.ArtifactStagingDirectory)
 
   deploy:
     runs-on: windows-latest
@@ -53,18 +49,18 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      # שלב 1: Download artifact מהשלב הקודם
+      # שלב 8: הורדת הארטיפקטים
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
           name: ASP-app
 
-      # שלב 2: Deploy ל-Azure Web App
+      # שלב 9: פריסה ל-Azure
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'BookNeT'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_698BC021C69048628DF1BC8B9E7049E4 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
           package: .
